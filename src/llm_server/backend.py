@@ -8,6 +8,7 @@ from io import BytesIO
 
 import torch
 from PIL import Image as PillowImage
+import llm
 
 from llm_server.schemas import Response
 
@@ -30,8 +31,40 @@ class Backend(BaseBackend):
 
         self.models: dict = {}
 
-    def get_model_list(self) -> list[str]:
-        return list(self.models.keys())
+
+    def add_model(self, tag: str, **kwargs):
+
+        if tag in self.models:
+            raise ValueError(f'Tage "{tag}" already in use by model.')
+        
+        self.models[tag] = llm.model(**kwargs)
+
+        return
+    
+
+    def load_model(self, tag: str, **kwargs):
+
+        if tag not in self.models:
+            raise ValueError(f'No model with specified tag "{tag}"!')
+        
+        if 'device' not in kwargs:
+            kwargs['device'] = self.get_device()
+
+        self.models[tag].load(**kwargs)
+
+        return
+    
+
+    def del_model(self, tag: str) -> None:
+
+        if tag in self.models:
+            del self.models[tag]
+
+        return
+
+
+    def list_models(self) -> list[str]:
+        return {k: v.name for k, v in self.models.items()}
     
 
     def get_device(self):
@@ -64,7 +97,7 @@ class Backend(BaseBackend):
         else:
             images = None
 
-        response = self.parent.backend.models[details.tag].ask(
+        response = self.models[details.tag].ask(
             prompt=details.prompt,
             images=images,
             max_tokens=details.max_tokens,

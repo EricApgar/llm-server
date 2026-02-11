@@ -2,12 +2,12 @@ from typing import TYPE_CHECKING
 
 
 __all__ = [
-    'server'
+    'Server'
 ]
 
 
 def __getattr__(name: str):
-    if name == 'server':
+    if name == 'Server':
         from .server import Server
         return Server
     else:
