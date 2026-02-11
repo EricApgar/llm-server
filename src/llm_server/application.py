@@ -51,9 +51,9 @@ class Application(BaseApplication):
         
 
         @self.api.get('/get-models')
-        def get_models() -> list[str]:
+        def get_models() -> dict:
 
-            model_list = self.parent.backend.get_model_list()
+            model_list = self.parent.backend.list_models()
 
             return model_list
         
@@ -80,7 +80,5 @@ class Application(BaseApplication):
                 raise HTTPException(status_code=409, detail=str(e))
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
-            
-            return
             
         return

@@ -3,7 +3,6 @@ import asyncio
 import threading
 
 import uvicorn
-import llm
 
 from llm_server.application import Application, BaseApplication
 from llm_server.backend import Backend, BaseBackend
@@ -86,37 +85,28 @@ class Server(BaseServer):
         self.application: Application = Application(parent=self)
         self.backend: Backend = Backend(parent=self)
 
-
-    def add_model(self, tag: str, **kwargs):
-
-        if tag in self.backend.models:
-            raise ValueError(f'Tage "{tag}" already in use by model.')
+        self._PUBLIC_BACKEND = {
+            'add_model',
+            'del_model',
+            'load_model',
+            'list_models'}
         
-        self.backend.models[tag] = llm.model(**kwargs)
 
-        return
-    
-
-    def load_model(self, tag: str, **kwargs):
-
-        if tag not in self.backend.models:
-            raise ValueError(f'No model with specified tag "{tag}"!')
+    def __getattr__(self, name):
+        '''
+        Exposes a couple of backened methods directly to the user
+        without them having to go through the backend.
+        '''
+        if name in self._PUBLIC_BACKEND:
+            return getattr(self.backend, name)
         
-        if 'device' not in kwargs:
-            kwargs['device'] = self.backend.get_device()
+        raise AttributeError(f'{type(self).__name__!s} has no attribute {name}!')
 
-        self.backend.models[tag].load(**kwargs)
 
-        return
-    
+    def __dir__(self):
 
-    def del_model(self, tag: str) -> None:
+        return sorted(set(super().__dir__()) | self._PUBLIC_BACKEND)
 
-        if tag in self.backend.models:
-            del self.backend.models[tag]
-
-        return
-    
 
 if __name__ == '__main__':
 
