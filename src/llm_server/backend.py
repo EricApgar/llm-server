@@ -87,6 +87,8 @@ class Backend(BaseBackend):
         
         response = self.models[first_key].ask(prompt='Tell me a joke.')
 
+        response = Response(text=response)
+
         return response
     
 
@@ -94,14 +96,17 @@ class Backend(BaseBackend):
 
         if details.images:
             images = [api_b64_to_PIL(i) for i in details.images]
-        else:
-            images = None
 
-        response = self.models[details.tag].ask(
-            prompt=details.prompt,
-            images=images,
-            max_tokens=details.max_tokens,
-            temperature=details.temperature)
+            response = self.models[details.tag].ask(
+                prompt=details.prompt,
+                images=images,
+                max_tokens=details.max_tokens,
+                temperature=details.temperature)
+        else:  # Some models don't handle image inputs.
+            response = self.models[details.tag].ask(
+                prompt=details.prompt,
+                max_tokens=details.max_tokens,
+                temperature=details.temperature)
         
         response = Response(text=response)
 

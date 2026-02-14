@@ -10,4 +10,4 @@ class Request(BaseModel):
 
 
 class Response(BaseModel):
-    test: str
+    text: str
