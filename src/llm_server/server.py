@@ -112,11 +112,13 @@ if __name__ == '__main__':
 
     server = Server()
     server.set_host(ip_address='127.0.0.1', port=8000)
-    server.add_model(tag='Phi-4', name='microsoft/Phi-4-multimodal-instruct')
-    server.load_model(tag='Phi-4', location=r'<full path to model cache>')
+    server.add_model(tag='gpt', name='openai/gpt-oss-20b')
+    server.load_model(tag='gpt', location=r'/home/eric/Repos/model_cache')
     server.start()
 
     import time
     time.sleep(100)  # llm-server is non-blocking.
 
     server.stop()
+
+    pass

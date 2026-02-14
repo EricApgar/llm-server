@@ -44,7 +44,7 @@ class Application(BaseApplication):
         self.api = FastAPI()
 
 
-        @self.api.get('/')
+        @self.api.get('/')  # response_class=PlainTextResponse if need formatted text.
         def default() -> str:
 
             return 'Running.'
@@ -58,8 +58,8 @@ class Application(BaseApplication):
             return model_list
         
 
-        @self.api.get('/ask-test', response_class=PlainTextResponse)
-        async def ask_test() -> str:
+        @self.api.get('/ask-test', response_model=Response)
+        async def ask_test() -> Response:
             
             response = self.parent.backend.ask_test()
 
