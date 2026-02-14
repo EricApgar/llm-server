@@ -5,7 +5,7 @@ description = "Template for repos that are intended to be packaged libraries."
 readme = "README.md"
 authors = [{ name = "Eric Apgar" }]
 urls = { "Homepage" = "https://github.com/EricApgar/llm-server" }
-requires-python = "~=3.13.0"
+requires-python = "~=3.12.0"
 
 # Examples of dependency types.
 # dependencies = [
@@ -21,6 +21,7 @@ requires-python = "~=3.13.0"
 
 dependencies = [
     "fastapi>=0.128.3",
+    "llm[all]",
 ]
 
 # If you need to add an index (extra "source" location) for certain packages: 
@@ -44,4 +45,7 @@ package-dir = {"" = "src"}  # Important that this folder is the name of the fold
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.uv.sources]
+llm = { git = "https://github.com/EricApgar/large-language-model.git" }
 # include = ["llm_server*"]  # The import <name>. Defined by the name of the folder under src.
