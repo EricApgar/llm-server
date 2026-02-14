@@ -22,6 +22,7 @@ requires-python = "~=3.12.0"
 dependencies = [
     "fastapi>=0.128.3",
     "llm[all]",
+    "uvicorn>=0.40.0",
 ]
 
 # If you need to add an index (extra "source" location) for certain packages: 

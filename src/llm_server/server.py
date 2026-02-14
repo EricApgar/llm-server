@@ -52,7 +52,7 @@ class BaseServer(ABC):
         self._server = uvicorn.Server(config=config)
 
         def run_server():
-            asyncio.run(self._server.server())
+            asyncio.run(self._server.serve())
             return
 
         self._thread = threading.Thread(target=run_server, daemon=True)
