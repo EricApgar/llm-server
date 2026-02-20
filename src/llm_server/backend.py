@@ -94,19 +94,15 @@ class Backend(BaseBackend):
 
     def ask(self, details: Request) -> str:
 
-        if details.images:
-            images = [api_b64_to_PIL(i) for i in details.images]
+        input_args = details.model_dump()  # Convert to dict for later unpacking.
+        del input_args['tag']  # Not a part of the input params for llm.ask().
 
-            response = self.models[details.tag].ask(
-                prompt=details.prompt,
-                images=images,
-                max_tokens=details.max_tokens,
-                temperature=details.temperature)
-        else:  # Some models don't handle image inputs.
-            response = self.models[details.tag].ask(
-                prompt=details.prompt,
-                max_tokens=details.max_tokens,
-                temperature=details.temperature)
+        if input_args['images']:  # If using images input, assume model can handle images.
+            input_args['images'] = [api_b64_to_PIL(i) for i in details.images]
+        else:
+            del input_args['images']
+        
+        response = self.models[details.tag].ask(**input_args)
         
         response = Response(text=response)
 
