@@ -15,14 +15,14 @@ def pil_to_api_b64(pil_image: PillowImage.Image) -> str:
 
 URL = 'https://127.0.0.1:8000/ask'
 
-images = [pil_to_api_b64(PillowImage.open('<path to image>'))]
+# images = [pil_to_api_b64(PillowImage.open('<path to image>'))]
 
 REQUEST_DETAILS = {
-	'tag': 'Phi-4',
+	'tag': 'GPT',
 	'prompt': 'Name a primary color.',
-	'images': images,
+	# 'images': images,
 	'max_tokens': 64,
-	'temperature': 0.2,}
+	'temperature': 0.9,}
 
 
 def main() -> None:
@@ -34,7 +34,7 @@ def main() -> None:
 
 	except Exception as e:
 		raise(e)
-	
+
 	return
 
 

@@ -6,7 +6,7 @@ import uvicorn
 
 from llm_server.application import Application, BaseApplication
 from llm_server.backend import Backend, BaseBackend
-from llm_server.helper import Endpoint
+from llm_server.helper.helper import Endpoint
 
 
 class BaseServer(ABC):

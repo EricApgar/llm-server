@@ -30,11 +30,11 @@ class Endpoint:
             self.port = int(port)
 
         return
-    
+
 
     def __eq__(self, other) -> bool:
 
         if not isinstance(other, Endpoint):
             return NotImplemented
-        
+
         return (self.ip_address, self.port) == (other.ip_address, other.port)
