@@ -1,12 +1,19 @@
 import queue
 import weakref
 import re
+from dataclasses import dataclass
 
 from nicegui import ui
 import llm_server as llms
 
 from llm_server.helper.helper import Endpoint
 from llm_server.helper.gui_helper import LocalFilePicker
+
+
+@dataclass
+class PreviousStates:
+    endpoint: Endpoint = None
+    protocol: str = None
 
 
 class LlmServerWidget:
@@ -184,7 +191,8 @@ class Network:
 
 class ModelTable:
 
-    def __init__(self, parent: 'LlmServerWidget') -> None:
+    def __init__(self, parent: LlmServerWidget) -> None:
+
         self.parent = weakref.proxy(parent)
         
         self.table: ui.table = None
@@ -323,7 +331,7 @@ class ModelTable:
 
 class ModelLoading:
 
-    def __init__(self, parent: 'LlmServerWidget') -> None:
+    def __init__(self, parent: LlmServerWidget) -> None:
 
         self.parent = weakref.proxy(parent)
 
@@ -353,21 +361,27 @@ class ModelLoading:
                 value='',
                 ).props('dense outlined clearable').classes('w-[20rem]')
             self.location.on('change', lambda e: self.on_location_change(e))
+            self.location.disable()
 
             self.button_browse = ui.button(
                 text='Browse',
                 on_click=self.on_browse).props('unelevated')
+            self.button_browse.disable()
 
         with ui.row().classes('w-full gap-1 justify-center'):
             self.button_load = ui.button(
                 text='Load',
                 color='gold',
                 on_click=self.on_load).props('unelevated')
+            self.button_load.disable()
 
 
     def on_model_select(self, e):
         self.selected_model = e.value
-        self.location.value = ''
+        
+        self.location.enable()
+        self.button_browse.enable()
+        self.button_load.enable()
         return
 
 
@@ -379,7 +393,12 @@ class ModelLoading:
     def on_load(self, e):
         self.parent.server.load_model(tag=self.selected_model, location=self.location.value)
         self.parent.log_queue.put(f'Model "{self.selected_model}" loaded.')
-        self.location.value = ''
+        
+        self.location.enable()
+        self.button_browse.enable()
+        self.button_load.enable()
+
+        return
 
 
     async def on_browse(self) -> None:
