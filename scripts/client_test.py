@@ -7,7 +7,6 @@ from PIL import Images as PillowImage
 
 
 def pil_to_api_b64(pil_image: PillowImage.Image) -> str:
-  
   buffer = BytesIO()
   pil_image.save(buffer, format='PNG')
 
@@ -16,28 +15,29 @@ def pil_to_api_b64(pil_image: PillowImage.Image) -> str:
 
 URL = 'https://127.0.0.1:8000/ask'
 
-images = [pil_to_api_b64(PillowImage(<path to image>)]
+images = [pil_to_api_b64(PillowImage.open('<path to image>'))]
 
 REQUEST_DETAILS = {
-  'tag': 'Phi-4',
-  'prompt': 'Name a primary color.',
-  'images': images,
-  'max_tokens': 64,
-  'temperature': 0.2,
-}
+	'tag': 'Phi-4',
+	'prompt': 'Name a primary color.',
+	'images': images,
+	'max_tokens': 64,
+	'temperature': 0.2,}
 
 
 def main() -> None:
 
-    try:
-        response = requests.post(URL, json=REQUEST_DETAILS, timeout=15)
-        data = response.json()
-        print(json.dumps(data, indent=4))
+	try:
+		response = requests.post(URL, json=REQUEST_DETAILS, timeout=15)
+		data = response.json()
+		print(json.dumps(data, indent=4))
 
-    except Exception as e:
-        raise(e)
+	except Exception as e:
+		raise(e)
+	
+	return
 
 
 if __name__ == '__main__':
-  main()
-  
+
+	main()
