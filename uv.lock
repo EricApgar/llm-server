@@ -445,8 +445,8 @@ wheels = [
 
 [[package]]
 name = "llm"
-version = "0.4.1"
-source = { git = "https://github.com/EricApgar/large-language-model#4af608fc90cfa8a4021acd98ee9ce16ffe74cd9c" }
+version = "0.4.2"
+source = { git = "https://github.com/EricApgar/large-language-model#275714b6a3c52eb7ce436e7707a30b29de5ff162" }
 dependencies = [
     { name = "llm-conversation" },
     { name = "pytest" },

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from nicegui import ui
 import llm_server as llms
+import llm
 
 from llm_server.helper.helper import Endpoint
 from llm_server.helper.gui_helper import LocalFilePicker
@@ -106,7 +107,7 @@ class Network:
                 on_click=self.on_toggle
                 ).props('push color=grey outline')
 
-            with ui.columns().classes('gap-1'):
+            with ui.column().classes('gap-1'):
                 self.ip_address = ui.input(
                     label='IP Address',
                     placeholder='127.0.0.1',  # NOTE: Value supercededs placeholder.
@@ -198,14 +199,14 @@ class ModelTable:
         self.table: ui.table = None
 
         self.new_tag_input: str = None
-        self.new_name_input: str = None
+        self.new_name_input: ui.select = None
 
         self.by_id: dict = {}
 
         self._selected_models: list = []
 
         ui.label(text='Models').classes('text-md font-medium')
-        with ui.row().classes('items-center gap-4'):
+        with ui.row().classes('items-center gap-4 w-full'):
             self.table = ui.table(
                 columns=[
                     {'name': 'tag', 'label': 'Tag', 'field': 'tag', 'align': 'left'},
@@ -228,11 +229,10 @@ class ModelTable:
             ui.label(':').classes('pt-2 text-lg')
 
             with ui.column().classes('gap-1'):
-                self.new_name_input = ui.input(
-                    label='Name',
-                    placeholder='microsoft/Phi-4-multimodal-instruct',
-                    value=''
-                    ).props('dense outlined clearable').classes('w-[20rem]')
+                self.new_name_input = ui.select(
+                    options=llm.list_models(kind='llm'),
+                    label='Model',
+                    ).props('outlined dense').classes('w-[18rem]')
                 self.new_name_input.on('change', lambda e: self.on_name_change(e))
                 self.by_id[self.new_name_input.id] = self.new_name_input
 
@@ -255,16 +255,8 @@ class ModelTable:
 
     def on_tag_change(self, e) -> None:
         if not isinstance(self.new_tag_input.value, str):
-            self.parent.loq_queue.put(f'Invalid model tag. Must be string.')
+            self.parent.log_queue.put(f'Invalid model tag. Must be string.')
             self.new_tag_input = ''
-
-        return
-
-
-    def on_name_change(self, e) -> None:
-        if not isinstance(self.new_name_input.value, str):
-            self.parent.loq_queue.put(f'Invalid model name. Must be string.')
-            self.new_name_input = ''
 
         return
 
@@ -290,7 +282,7 @@ class ModelTable:
         self.parent.model_loading.model_select.options = list(self.parent.server.backend.models.keys())
         self.parent.model_loading.model_select.update()
 
-        self.parent.loq_queue.put(f'Added model, {tag}: {name}')
+        self.parent.log_queue.put(f'Added model, {tag}: {name}')
 
         return
 
