@@ -19,7 +19,7 @@ class PreviousStates:
 
 class LlmServerWidget:
 
-    def __init__(self) -> None:
+    def __init__(self, ip_address: str = '127.0.0.1', port: int = 8000) -> None:
 
         self.server: llms.Server = None
         self.network: Network = None
@@ -35,7 +35,7 @@ class LlmServerWidget:
 
             ui.separator()
 
-            self.network = Network(parent=self)
+            self.network = Network(parent=self, ip_address=ip_address, port=port)
             self.server = llms.Server()
             self.server.set_host(ip_address=self.network.ip_address.value, port=int(self.network.port.value))
 
@@ -87,7 +87,7 @@ class LlmServerWidget:
 
 class Network:
 
-    def __init__(self, parent: LlmServerWidget) -> None:
+    def __init__(self, parent: LlmServerWidget, ip_address: str = '127.0.0.1', port: int = 8000) -> None:
 
         self.parent = weakref.proxy(parent)
 
@@ -111,7 +111,7 @@ class Network:
                 self.ip_address = ui.input(
                     label='IP Address',
                     placeholder='127.0.0.1',  # NOTE: Value supercededs placeholder.
-                    value='127.0.0.1'
+                    value=ip_address
                     ).props('dense outlined clearable').classes('w-[10rem]')
                 self.ip_address.on('change', lambda e: self.on_ip_change(e))
                 self.by_id[self.ip_address.id] = self.ip_address
@@ -122,7 +122,7 @@ class Network:
                 self.port = ui.input(
                     label='Port',
                     placeholder='8000',
-                    value=8000
+                    value=port
                     ).props('dense outlined clearable type=number').classes('w-[8rem]')
                 self.port.on('change', lambda e: self.on_port_change(e))
                 self.by_id[self.port.id] = self.port
@@ -407,7 +407,8 @@ class ModelLoading:
         return
 
 
-with ui.row().classes('w-full justify-center p-6'):
-    LlmServerWidget()
+def run_gui(ip_address: str = '127.0.0.1', port: int = 8000, gui_port: int = 8080) -> None:
+    with ui.row().classes('w-full justify-center p-6'):
+        LlmServerWidget(ip_address=ip_address, port=port)
 
-ui.run(title='LLM Server Widget', port=8000)
+    ui.run(title='LLM Server Widget', port=gui_port)
