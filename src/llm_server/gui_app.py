@@ -115,6 +115,7 @@ class Network:
                     placeholder='127.0.0.1',  # NOTE: Value supercededs placeholder.
                     ).props('dense outlined clearable').classes('w-[10rem]')
                 self.ip_address.on('change', lambda e: self.on_ip_change(e))
+                self.ip_address.on('clear', lambda e: self.on_off.disable())
                 self.by_id[self.ip_address.id] = self.ip_address
 
             ui.label(':').classes('pt-2 text-lg')
@@ -126,6 +127,7 @@ class Network:
                     placeholder='8000',
                     ).props('dense outlined clearable type=number').classes('w-[8rem]')
                 self.port.on('change', lambda e: self.on_port_change(e))
+                self.port.on('clear', lambda e: self.on_off.disable())
                 self.by_id[self.port.id] = self.port
 
             # self.previous_states.endpoint = Endpoint(ip_address=self.ip_address.value, port=int(self.port.value))
@@ -160,8 +162,6 @@ class Network:
 
         port = int(self.port.value)
 
-        print(f'Port: {port}')
-
         if not is_valid_port(port):
             self.port.value = 8000  # Reset to valid option.
             self.parent.log_queue.put(f'Invalid port. Must be integer 1-{MAX_PORT}.')
@@ -181,8 +181,6 @@ class Network:
         is_valid_ip_address = lambda ip_address: bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', ip_address))
 
         ip_address = str(self.ip_address.value).strip()
-
-        print(f'IP Address: {ip_address}')
 
         if not is_valid_ip_address(ip_address):
             self.parent.log_queue.put(f'Invalid IP address. Must be format "X.X.X.X".')
