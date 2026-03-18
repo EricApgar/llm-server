@@ -110,6 +110,9 @@ class Backend(BaseBackend):
         else:
             del input_args['images']
 
+        # Remove unset (None) fields so defaults are used downstream.
+        input_args = {k: v for k, v in input_args.items() if v is not None}
+
         if isinstance(input_args['prompt'], dict):
             c = Conversation()
             c.from_dict(data=input_args['prompt'])

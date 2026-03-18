@@ -6,32 +6,32 @@ import base64
 from PIL import Image as PillowImage
 from llm_conversation import Conversation
 
-from llm_server.gui_app import run_gui
-
 
 def pil_to_api_b64(pil_image: PillowImage.Image) -> str:
-  buffer = BytesIO()
-  pil_image.save(buffer, format='PNG')
+	buffer = BytesIO()
+	pil_image.save(buffer, format='PNG')
 
-  return base64.b64encode(buffer.getvalue()).decode('ascii')
+	return base64.b64encode(buffer.getvalue()).decode('ascii')
 
 
-URL = 'https://127.0.0.1:8000/ask'
+# TODO: Point to endpoint of hosted llm_server.Server().
+URL = 'http://127.0.0.1:8001/ask'
 
+# TODO: Edit as needed.
 images = [pil_to_api_b64(PillowImage.open(r'/home/eric/Desktop/monkey.png'))]
 
+# TODO: Edit as needed.
 c = Conversation()
 c.set_overall_prompt(text='Pretend to be a person named John Doe.')
 c.add_context(text='Your favorite color is onyx.')
 c.add_response(role='user', text='Whats your name and favorite color?')
 prompt = c.to_dict()
 
+# TODO: Edit as needed.
 REQUEST_DETAILS = {
 	'tag': 'Phi-4',
 	'prompt': 'Describe the image.',
-	'images': images,
-	'max_tokens': 64,
-	'temperature': 0.9}
+	'images': images}
 
 
 def main() -> None:
@@ -49,6 +49,6 @@ def main() -> None:
 
 if __name__ in {'__main__', '__mp_main__'}:
 
-	# run_gui()
-
+	# TODO: Make sure a server instance (llm_server.Server() or 
+	# llm_server.server_gui()) is running before running main().
 	main()
