@@ -60,8 +60,9 @@ pip install -e ".[gui]"
 Running an LLM requires an NVIDIA GPU with ideally a large number of TOPS. See the [large-language-model](https://github.com/EricApgar/large-language-model) repo for hardware details and GPU driver setup.
 
 # Usage
-Create a server, register a model with a tag, load it, and start serving.
+Create a server, register a model with a tag, load it, and start serving. Then send a request and receive a response.
 
+## Server
 ```
 import llm_server
 
@@ -75,22 +76,46 @@ server.start()  # Non-blocking.
 server.stop()
 ```
 
+## Requester
+```
+URL = 'http://127.0.0.1:8001/ask'
+details = {...}  # See request body examples below.
+
+response = requests.post(URL, json=details, timeout=15)
+data = response.json()
+print(data['text'])
+```
+
 # API Endpoints
 | Method | Endpoint | Description |
 |-|-|-|
-| GET | `/` | Health check — returns `"Running."` |
-| GET | `/get-models` | List all registered models and their tags |
-| GET | `/ask-test` | Send a test prompt (`"Tell me a joke."`) to the first available model |
-| POST | `/ask` | Send a prompt to a specific model |
+| GET | `/` | Health check — returns `"Running."`. |
+| GET | `/get-models` | List all available hosted models and their tags. |
+| GET | `/ask-test` | Send a test prompt (`"Tell me a joke."`) to the first available model. |
+| POST | `/ask` | Send a prompt to a specific model. |
 
 ### POST /ask — Request Body
+
+#### Text Example
 ```
 {
     "tag": "gpt",
     "prompt": "Tell me a joke.",
-    "images": [],
     "max_tokens": 64,
     "temperature": 0.9
 }
 ```
-`prompt` may also be a conversation dict (see [llm-conversation](https://github.com/EricApgar/llm-conversation)). `images` accepts base64-encoded PNG strings for multimodal models.
+* `prompt` may also be a Conversation formatted dict output (see [llm-conversation](https://github.com/EricApgar/llm-conversation)). 
+    * ```llm_conversation.Conversation.to_dict()```
+
+#### Image Example
+```
+{
+    "tag": "Phi4",
+    "prompt": "Describe the image.",
+    "images": [llm_server.encode_image(<path to image>)],
+    "max_tokens": 64,
+}
+```
+* ```temperature``` arg currently not supported for Phi-4-multimodal-instruct.
+* ```images``` accepts base64-encoded PNG strings for multimodal models. Encoder is provided by ```llm_server```.

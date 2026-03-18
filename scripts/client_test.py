@@ -1,24 +1,16 @@
-import json
 import requests
-from io import BytesIO
-import base64
 
 from PIL import Image as PillowImage
 from llm_conversation import Conversation
 
-
-def pil_to_api_b64(pil_image: PillowImage.Image) -> str:
-	buffer = BytesIO()
-	pil_image.save(buffer, format='PNG')
-
-	return base64.b64encode(buffer.getvalue()).decode('ascii')
+from llm_server.helper.helper import encode_image
 
 
 # TODO: Point to endpoint of hosted llm_server.Server().
 URL = 'http://127.0.0.1:8001/ask'
 
 # TODO: Edit as needed.
-images = [pil_to_api_b64(PillowImage.open(r'/home/eric/Desktop/monkey.png'))]
+images = [encode_image(image=PillowImage.open(r'/home/eric/Desktop/monkey.png'))]
 
 # TODO: Edit as needed.
 c = Conversation()
@@ -28,7 +20,12 @@ c.add_response(role='user', text='Whats your name and favorite color?')
 prompt = c.to_dict()
 
 # TODO: Edit as needed.
-REQUEST_DETAILS = {
+REQUEST_DETAILS_TEXT = {
+	'tag': 'GPT',
+	'prompt': prompt,
+	'temperature': .9}
+
+REQUEST_DETAILS_IMAGE = {
 	'tag': 'Phi-4',
 	'prompt': 'Describe the image.',
 	'images': images}
@@ -37,9 +34,9 @@ REQUEST_DETAILS = {
 def main() -> None:
 
 	try:
-		response = requests.post(URL, json=REQUEST_DETAILS, timeout=15)
+		response = requests.post(URL, json=REQUEST_DETAILS_TEXT, timeout=15)
 		data = response.json()
-		print(json.dumps(data, indent=4))
+		print(data['text'])
 
 	except Exception as e:
 		raise(e)

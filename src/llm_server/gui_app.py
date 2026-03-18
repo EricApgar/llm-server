@@ -1,7 +1,6 @@
 import queue
 import weakref
 import re
-from dataclasses import dataclass
 import socket
 
 from nicegui import ui, run
