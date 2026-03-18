@@ -12,12 +12,6 @@ from llm_server.helper.helper import Endpoint
 from llm_server.helper.gui_helper import LocalFilePicker
 
 
-# @dataclass
-# class PreviousStates:
-#     endpoint: Endpoint = None
-#     protocol: str = None
-
-
 class LlmServerWidget:
 
     def __init__(self) -> None:
@@ -93,7 +87,6 @@ class Network:
         self.parent = weakref.proxy(parent)
 
         self.endpoint: Endpoint = None
-        # self.previous_states: PreviousStates = PreviousStates()
 
         self.by_id: dict = {}
 
@@ -129,8 +122,6 @@ class Network:
                 self.port.on('change', lambda e: self.on_port_change(e))
                 self.port.on('clear', lambda e: self.on_off.disable())
                 self.by_id[self.port.id] = self.port
-
-            # self.previous_states.endpoint = Endpoint(ip_address=self.ip_address.value, port=int(self.port.value))
 
             if not self.is_endpoint_free(ip_address=self.ip_address.value, port=int(self.port.value)):
                 self.on_off.disable()
