@@ -34,13 +34,13 @@ class BaseServer(ABC):
         self.endpoint = Endpoint(ip_address=ip_address, port=port)
 
         return
-    
+
 
     def start(self):
 
         if self.is_online:
             return
-        
+
         self.application._set_api()
 
         config = uvicorn.Config(
@@ -61,7 +61,7 @@ class BaseServer(ABC):
         self.is_online = True
 
         return
-    
+
 
     def stop(self):
 
@@ -75,7 +75,7 @@ class BaseServer(ABC):
             self._thread = None
 
         return
-    
+
 
 class Server(BaseServer):
 
@@ -90,7 +90,7 @@ class Server(BaseServer):
             'del_model',
             'load_model',
             'list_models'}
-        
+
 
     def __getattr__(self, name):
         '''
@@ -99,7 +99,7 @@ class Server(BaseServer):
         '''
         if name in self._PUBLIC_BACKEND:
             return getattr(self.backend, name)
-        
+
         raise AttributeError(f'{type(self).__name__!s} has no attribute {name}!')
 
 
