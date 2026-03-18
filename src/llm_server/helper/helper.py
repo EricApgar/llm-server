@@ -1,4 +1,20 @@
+from io import BytesIO
+import base64
 from typing import Optional, overload
+
+from PIL import Image as PillowImage
+
+
+def encode_image(image: PillowImage.Image) -> str:
+    """
+    Encode a PIL image as a base64 string for API transport.
+    """
+
+    buffer = BytesIO()
+    image.save(buffer, format='PNG')
+    encoded_output = base64.b64encode(buffer.getvalue()).decode('ascii')
+
+    return encoded_output
 
 
 class Endpoint:

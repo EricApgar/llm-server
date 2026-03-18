@@ -1,45 +1,42 @@
-import json
 import requests
-from io import BytesIO
-import base64
 
 from PIL import Image as PillowImage
 from llm_conversation import Conversation
 
-from llm_server.gui_app import run_gui
+from llm_server.helper.helper import encode_image
 
 
-def pil_to_api_b64(pil_image: PillowImage.Image) -> str:
-  buffer = BytesIO()
-  pil_image.save(buffer, format='PNG')
+# TODO: Point to endpoint of hosted llm_server.Server().
+URL = 'http://127.0.0.1:8001/ask'
 
-  return base64.b64encode(buffer.getvalue()).decode('ascii')
+# TODO: Edit as needed.
+images = [encode_image(image=PillowImage.open(r'/home/eric/Desktop/monkey.png'))]
 
-
-URL = 'https://127.0.0.1:8000/ask'
-
-# images = [pil_to_api_b64(PillowImage.open('<path to image>'))]
-
+# TODO: Edit as needed.
 c = Conversation()
 c.set_overall_prompt(text='Pretend to be a person named John Doe.')
 c.add_context(text='Your favorite color is onyx.')
 c.add_response(role='user', text='Whats your name and favorite color?')
 prompt = c.to_dict()
 
-REQUEST_DETAILS = {
+# TODO: Edit as needed.
+REQUEST_DETAILS_TEXT = {
 	'tag': 'GPT',
-	'prompt': prompt, #'Name a primary color.',
-	# 'images': images,
-	'max_tokens': 64,
-	'temperature': 0.9,}
+	'prompt': prompt,
+	'temperature': .9}
+
+REQUEST_DETAILS_IMAGE = {
+	'tag': 'Phi-4',
+	'prompt': 'Describe the image.',
+	'images': images}
 
 
 def main() -> None:
 
 	try:
-		response = requests.post(URL, json=REQUEST_DETAILS, timeout=15)
+		response = requests.post(URL, json=REQUEST_DETAILS_TEXT, timeout=15)
 		data = response.json()
-		print(json.dumps(data, indent=4))
+		print(data['text'])
 
 	except Exception as e:
 		raise(e)
@@ -49,6 +46,6 @@ def main() -> None:
 
 if __name__ in {'__main__', '__mp_main__'}:
 
-	run_gui()
-
-	# main()
+	# TODO: Make sure a server instance (llm_server.Server() or 
+	# llm_server.server_gui()) is running before running main().
+	main()

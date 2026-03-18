@@ -1,6 +1,6 @@
 [project]
 name = "llm_server"  # The pip install <name>.
-version = "0.1.0"
+version = "0.2.0"
 description = "Template for repos that are intended to be packaged libraries."
 readme = "README.md"
 authors = [{ name = "Eric Apgar" }]
@@ -16,6 +16,10 @@ dependencies = [
 [project.optional-dependencies]
 gui = [
     "nicegui>=3.8.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "requests>=2.32.0",
 ]
 
 [tool.uv.sources]
