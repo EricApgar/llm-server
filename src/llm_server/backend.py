@@ -9,6 +9,7 @@ from io import BytesIO
 import torch
 from PIL import Image as PillowImage
 import llm
+from llm_conversation import Conversation
 
 from llm_server.schemas import Response
 
@@ -48,7 +49,7 @@ class Backend(BaseBackend):
             raise ValueError(f'No model with specified tag "{tag}"!')
         
         if 'device' not in kwargs:
-            kwargs['device'] = self.get_device()
+            kwargs['device'] = self.get_device(tag=tag)
 
         self.models[tag].load(**kwargs)
 
@@ -59,19 +60,24 @@ class Backend(BaseBackend):
 
         if tag in self.models:
             del self.models[tag]
+            torch.cuda.empty_cache()
 
         return
 
 
     def list_models(self) -> list[str]:
+
         return {k: v.name for k, v in self.models.items()}
     
 
-    def get_device(self):
+    def get_device(self, tag: str):
+        '''
+        Get the associated GPU device for the specified model.
+        '''
 
         all_device_count = torch.cuda.device_count()
 
-        i = (len(self.models) - 1) % all_device_count
+        i = list(self.models).index(tag) % all_device_count
 
         device = f'gpu:{i}'
 
@@ -89,6 +95,8 @@ class Backend(BaseBackend):
 
         response = Response(text=response)
 
+        torch.cuda.empty_cache()
+
         return response
     
 
@@ -101,10 +109,17 @@ class Backend(BaseBackend):
             input_args['images'] = [api_b64_to_PIL(i) for i in details.images]
         else:
             del input_args['images']
-        
+
+        if isinstance(input_args['prompt'], dict):
+            c = Conversation()
+            c.from_dict(data=input_args['prompt'])
+            input_args['prompt'] = c
+
         response = self.models[details.tag].ask(**input_args)
         
         response = Response(text=response)
+
+        torch.cuda.empty_cache()
 
         return response
     

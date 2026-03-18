@@ -7,35 +7,19 @@ authors = [{ name = "Eric Apgar" }]
 urls = { "Homepage" = "https://github.com/EricApgar/llm-server" }
 requires-python = "~=3.12.0"
 
-# Examples of dependency types.
-# dependencies = [
-#     "numpy==2.3.2",  # Specifically this version. numpy requires no depenedencies.
-#     "pandas~=2.3",  # Any micro version in 2.3 branch (>2.3, <2.4). Pandas has 4 dependencies.
-#     "PyYAML>5.1.1",  # Any version greater than 5.1.1.
-#     "Pygments",   # Latest version.
-#     'python-certifi-win32; platform_system == "Windows"',  # Only if on Windows.
-#     "torch",  # See below for special pytorch considerations.
-#     "torchvision",  # See below for special pytorch considerations.
-#     "llm"  # See below for special pytorch considerations.
-# ]
-
 dependencies = [
-    "fastapi>=0.128.3",
+    "fastapi>=0.135.1",
     "llm[all]",
-    "uvicorn>=0.40.0",
+    "uvicorn>=0.41.0",
 ]
 
-# If you need to add an index (extra "source" location) for certain packages: 
-# [[tool.uv.index]]
-# name = "pytorch-cu130"
-# url = "https://download.pytorch.org/whl/cu130"
-# explicit = true  # Only used for torch packages explicitly mapped below.
+[project.optional-dependencies]
+gui = [
+    "nicegui>=3.8.0",
+]
 
-# Route just these packages to their specific special indexes.
-# [tool.uv.sources]
-# torch = { index = "pytorch-cu130" }
-# torchvision = { index = "pytorch-cu130" }
-# llm = { git = "https://github.com/EricApgar/large-language-model", rev = "v0.1.0"}  # This routes to a GitHub release.
+[tool.uv.sources]
+llm = { git = "https://github.com/EricApgar/large-language-model" }
 
 [build-system]
 requires = ["uv_build>=0.9.7,<0.10.0"]
@@ -46,7 +30,4 @@ package-dir = {"" = "src"}  # Important that this folder is the name of the fold
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.uv.sources]
-llm = { git = "https://github.com/EricApgar/large-language-model.git" }
-# include = ["llm_server*"]  # The import <name>. Defined by the name of the folder under src.
+include = ["llm_server*"]  # The import <name>. Defined by the name of the folder under src.
