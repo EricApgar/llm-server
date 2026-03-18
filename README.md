@@ -1,5 +1,13 @@
 # llm-server
-Host an LLM as a non-blocking HTTP server with a simple interface for managing and querying models. Built on [FastAPI](https://fastapi.tiangolo.com/) and [uvicorn](https://www.uvicorn.org/), it wraps the [large-language-model](https://github.com/EricApgar/large-language-model) library to expose LLM inference over a REST API.
+Host an LLM on a non-blocking HTTP server with a simple interface for managing and querying models. This allows you to host an LLM on LLM-capable harware and then access it over the network from devices that can't run an LLM locally.
+
+Built on [FastAPI](https://fastapi.tiangolo.com/) and [uvicorn](https://www.uvicorn.org/), it wraps the [large-language-model](https://github.com/EricApgar/large-language-model) library to expose LLM inference over a REST API.
+
+A user friendly GUI interface is included (but **not** required) for general use.
+
+<div align="center">
+  <img src="assets/LLM Server GUI.png" alt="LLM Server GUI" width="400"/>
+</div>
 
 # Setup
 See [Releases](https://github.com/EricApgar/llm-server/releases) to install from wheel file.
@@ -7,7 +15,7 @@ See [Releases](https://github.com/EricApgar/llm-server/releases) to install from
 See ```pyproject.toml``` for required Python version and dependencies.
 
 ## Optional Dependencies
-This library uses optional dependencies for additional features. See the ```pyproject.toml``` for the list of optional library tags. To install with the GUI support, use the ```gui``` tag.
+This library uses optional dependencies for additional features. See the ```pyproject.toml``` for the list of optional library tags. To install with GUI support, use the ```gui``` tag.
 
 ## Library
 Install this repo as a library into another project.
