@@ -9,6 +9,7 @@ from io import BytesIO
 import torch
 from PIL import Image as PillowImage
 import llm
+from llm_conversation import Conversation
 
 from llm_server.schemas import Response
 
@@ -108,7 +109,12 @@ class Backend(BaseBackend):
             input_args['images'] = [api_b64_to_PIL(i) for i in details.images]
         else:
             del input_args['images']
-        
+
+        if isinstance(details['prompt'], dict):
+            c = Conversation()
+            c.from_dict(data=details['prompt'])
+            details['prompt'] = c
+
         response = self.models[details.tag].ask(**input_args)
         
         response = Response(text=response)
