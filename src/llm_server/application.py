@@ -5,7 +5,6 @@ import weakref
 from typing import TYPE_CHECKING
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import PlainTextResponse
 
 from llm_server.schemas import Request, Response
 
@@ -45,7 +44,7 @@ class Application(BaseApplication):
         self.api = FastAPI()
 
 
-        @self.api.get('/')  # response_class=PlainTextResponse if need formatted text.
+        @self.api.get('/')
         def default() -> str:
 
             return 'Running.'
