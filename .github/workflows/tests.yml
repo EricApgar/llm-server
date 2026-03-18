@@ -1,0 +1,23 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: self-hosted  # Requires a self-hosted runner with a GPU and model weights.
+                          # Register one at: Settings -> Actions -> Runners -> New self-hosted runner.
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install package
+        run: uv sync --extra dev
+
+      - name: Run tests
+        run: uv run pytest -v
+        env:
+          LLM_MODEL_CACHE: ${{ secrets.LLM_MODEL_CACHE }}
