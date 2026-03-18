@@ -445,11 +445,10 @@ wheels = [
 
 [[package]]
 name = "llm"
-version = "0.4.2"
-source = { git = "https://github.com/EricApgar/large-language-model#275714b6a3c52eb7ce436e7707a30b29de5ff162" }
+version = "0.4.3"
+source = { git = "https://github.com/EricApgar/large-language-model#4f85188e9b30b91caf7bdc64e53bbf4e905e8e43" }
 dependencies = [
     { name = "llm-conversation" },
-    { name = "pytest" },
     { name = "sentence-transformers" },
     { name = "torch" },
     { name = "torchvision" },
