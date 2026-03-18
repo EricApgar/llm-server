@@ -18,7 +18,7 @@ def pil_to_api_b64(pil_image: PillowImage.Image) -> str:
 
 URL = 'https://127.0.0.1:8000/ask'
 
-# images = [pil_to_api_b64(PillowImage.open('<path to image>'))]
+images = [pil_to_api_b64(PillowImage.open(r'/home/eric/Desktop/monkey.png'))]
 
 c = Conversation()
 c.set_overall_prompt(text='Pretend to be a person named John Doe.')
@@ -27,11 +27,11 @@ c.add_response(role='user', text='Whats your name and favorite color?')
 prompt = c.to_dict()
 
 REQUEST_DETAILS = {
-	'tag': 'GPT',
-	'prompt': prompt, #'Name a primary color.',
-	# 'images': images,
+	'tag': 'Phi-4',
+	'prompt': 'Describe the image.',
+	'images': images,
 	'max_tokens': 64,
-	'temperature': 0.9,}
+	'temperature': 0.9}
 
 
 def main() -> None:
@@ -49,6 +49,6 @@ def main() -> None:
 
 if __name__ in {'__main__', '__mp_main__'}:
 
-	run_gui()
+	# run_gui()
 
-	# main()
+	main()
