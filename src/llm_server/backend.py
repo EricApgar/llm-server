@@ -110,10 +110,10 @@ class Backend(BaseBackend):
         else:
             del input_args['images']
 
-        if isinstance(details['prompt'], dict):
+        if isinstance(input_args['prompt'], dict):
             c = Conversation()
-            c.from_dict(data=details['prompt'])
-            details['prompt'] = c
+            c.from_dict(data=input_args['prompt'])
+            input_args['prompt'] = c
 
         response = self.models[details.tag].ask(**input_args)
         

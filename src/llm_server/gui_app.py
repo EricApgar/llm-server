@@ -3,7 +3,7 @@ import weakref
 import re
 from dataclasses import dataclass
 
-from nicegui import ui
+from nicegui import ui, run
 import llm_server as llms
 import llm
 
@@ -168,7 +168,6 @@ class Network:
 
         if self.by_id[e.sender.id] == self.port:
             self.parent.server.set_host(ip_address=self.parent.server.endpoint.ip_address, port=port)
-            self.parent.log_queue.put(f'Port set to {port}.')
 
         return
 
@@ -382,10 +381,12 @@ class ModelLoading:
         return
 
 
-    def on_load(self, e):
-        self.parent.server.load_model(tag=self.selected_model, location=self.location.value)
+    async def on_load(self, e):
+        self.button_load.disable()
+        self.parent.log_queue.put(f'Loading model "{self.selected_model}"...')
+        await run.io_bound(self.parent.server.load_model, tag=self.selected_model, location=self.location.value)
         self.parent.log_queue.put(f'Model "{self.selected_model}" loaded.')
-        
+
         self.location.enable()
         self.button_browse.enable()
         self.button_load.enable()
@@ -407,9 +408,12 @@ class ModelLoading:
         return
 
 
-def run_gui(ip_address: str = '127.0.0.1', port: int = 8000) -> None:
+def run_gui(ip_address: str='127.0.0.1', port: int=8000) -> None:
 
-    with ui.row().classes('w-full justify-center p-6'):
-        LlmServerWidget()
+    def root():
+        with ui.row().classes('w-full justify-center p-6'):
+            LlmServerWidget()
 
-    ui.run(title='LLM Server', host=ip_address, port=port)
+    ui.run(title='LLM Server', host=ip_address, port=port, root=root)
+
+    return

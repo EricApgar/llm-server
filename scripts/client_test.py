@@ -3,8 +3,10 @@ import requests
 from io import BytesIO
 import base64
 
-from PIL import Images as PillowImage
+from PIL import Image as PillowImage
 from llm_conversation import Conversation
+
+from llm_server.gui_app import run_gui
 
 
 def pil_to_api_b64(pil_image: PillowImage.Image) -> str:
@@ -45,6 +47,8 @@ def main() -> None:
 	return
 
 
-if __name__ == '__main__':
+if __name__ in {'__main__', '__mp_main__'}:
 
-	main()
+	run_gui()
+
+	# main()
