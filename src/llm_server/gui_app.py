@@ -2,6 +2,7 @@ import queue
 import weakref
 import re
 from dataclasses import dataclass
+import socket
 
 from nicegui import ui, run
 import llm_server as llms
@@ -11,10 +12,10 @@ from llm_server.helper.helper import Endpoint
 from llm_server.helper.gui_helper import LocalFilePicker
 
 
-@dataclass
-class PreviousStates:
-    endpoint: Endpoint = None
-    protocol: str = None
+# @dataclass
+# class PreviousStates:
+#     endpoint: Endpoint = None
+#     protocol: str = None
 
 
 class LlmServerWidget:
@@ -92,7 +93,7 @@ class Network:
         self.parent = weakref.proxy(parent)
 
         self.endpoint: Endpoint = None
-        self.previous_states: PreviousStates = PreviousStates()
+        # self.previous_states: PreviousStates = PreviousStates()
 
         self.by_id: dict = {}
 
@@ -121,22 +122,28 @@ class Network:
             with ui.column().classes('gap-1'):
                 self.port = ui.input(
                     label='Port',
-                    value='8001',
-                    placeholder='8001',
+                    value='8000',
+                    placeholder='8000',
                     ).props('dense outlined clearable type=number').classes('w-[8rem]')
                 self.port.on('change', lambda e: self.on_port_change(e))
                 self.by_id[self.port.id] = self.port
 
-            self.previous_states.endpoint = Endpoint(ip_address=self.ip_address.value, port=int(self.port.value))
+            # self.previous_states.endpoint = Endpoint(ip_address=self.ip_address.value, port=int(self.port.value))
+
+            if not self.is_endpoint_free(ip_address=self.ip_address.value, port=int(self.port.value)):
+                self.on_off.disable()
 
 
     def on_toggle(self) -> None:
+
         if self.parent.server.is_online:
             self.parent.server.stop()
             self.on_off.text = 'OFF'
             self.on_off.props('push color=red outline')
         else:
+            self.parent.server.set_host(ip_address=self.ip_address.value, port=int(self.port.value))
             self.parent.server.start()
+
             if self.parent.server.is_online:
                 self.on_off.text = 'ON'
                 self.on_off.props('push color=green')
@@ -149,44 +156,59 @@ class Network:
     def on_port_change(self, e) -> None:
         MAX_PORT = 65535
 
-        check_is_valid_port = lambda port: 1 <= port <= MAX_PORT
+        is_valid_port = lambda port: (0 <= port <= MAX_PORT)
 
-        port = str(self.port.value).strip()
-        try:
-            port = int(self.port.value)
-            is_valid_port = check_is_valid_port(port)
-        except Exception:
-            is_valid_port = False
+        port = int(self.port.value)
 
-        if port == self.parent.server.endpoint.port:
+        print(f'Port: {port}')
+
+        if not is_valid_port(port):
+            self.port.value = 8000  # Reset to valid option.
+            self.parent.log_queue.put(f'Invalid port. Must be integer 1-{MAX_PORT}.')
+            self.on_off.disable()
             return
 
-        if not is_valid_port:
-            self.port.value = str(self.parent.server.endpoint.port)
-            self.parent.loq_queue.put(f'Invalid port. Must be integer 1-{MAX_PORT}.')
-            return
-
-        if self.by_id[e.sender.id] == self.port:
-            self.parent.server.set_host(ip_address=self.parent.server.endpoint.ip_address, port=port)
+        if self.is_endpoint_free(ip_address=self.ip_address.value, port=port):
+            self.on_off.enable()
+        else:
+            self.on_off.disable()
 
         return
 
 
     def on_ip_change(self, e) -> None:
 
-        check_is_valid_ip_address = lambda ip_address: bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', ip_address))
+        is_valid_ip_address = lambda ip_address: bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', ip_address))
 
         ip_address = str(self.ip_address.value).strip()
-        is_valid_ip_address = check_is_valid_ip_address(ip_address)
 
-        if not is_valid_ip_address:
-            self.parent.log_queue.put(f'IP address set to {ip_address}.')
+        print(f'IP Address: {ip_address}')
 
-        if self.by_id[e.sender.id] == self.ip_address:
-            self.parent.server.set_host(ip_address=ip_address, port=self.parent.server.endpoint.port)
-            self.parent.loq_queue.put(f'IP Address set to {ip_address}.')
+        if not is_valid_ip_address(ip_address):
+            self.parent.log_queue.put(f'Invalid IP address. Must be format "X.X.X.X".')
+            self.ip_address.value = '127.0.0.1'  # Reset to something normal.
+            self.on_off.disable()
+            return
+
+        if self.is_endpoint_free(ip_address=ip_address, port=int(self.port.value)):
+            self.on_off.enable()
+        else:
+            self.on_off.disable()
 
         return
+
+
+    @staticmethod
+    def is_endpoint_free(ip_address: str, port: int) -> bool:
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind((ip_address, port))
+                return True
+            except OSError:
+                return False
+        return
+
 
 
 class ModelTable:
