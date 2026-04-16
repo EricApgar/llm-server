@@ -1,6 +1,6 @@
 [project]
 name = "llm_server"  # The pip install <name>.
-version = "0.2.0"
+version = "0.3.0"
 description = "Template for repos that are intended to be packaged libraries."
 readme = "README.md"
 authors = [{ name = "Eric Apgar" }]
