@@ -8,22 +8,42 @@ urls = { "Homepage" = "https://github.com/EricApgar/llm-server" }
 requires-python = "~=3.12.0"
 
 dependencies = [
-    "fastapi>=0.135.1",
-    "llm[all]",
-    "uvicorn>=0.41.0",
+    "requests>=2.32.0",
 ]
 
 [project.optional-dependencies]
+host = [
+    "fastapi>=0.135.1",
+    "llm[all]",
+    "uvicorn>=0.41.0",
+    "llm-conversation",
+]
 gui = [
+    "fastapi>=0.135.1",
+    "llm[all]",
+    "uvicorn>=0.41.0",
+    "llm-conversation",
     "nicegui>=3.8.0",
 ]
 dev = [
+    "fastapi>=0.135.1",
+    "llm[all]",
+    "uvicorn>=0.41.0",
+    "llm-conversation",
     "pytest>=8.0.0",
-    "requests>=2.32.0",
+]
+all = [
+    "fastapi>=0.135.1",
+    "llm[all]",
+    "uvicorn>=0.41.0",
+    "llm-conversation",
+    "nicegui>=3.8.0",
+    "pytest>=8.0.0",
 ]
 
 [tool.uv.sources]
 llm = { git = "https://github.com/EricApgar/large-language-model" }
+llm-conversation = { git = "https://github.com/EricApgar/llm-conversation" }
 
 [build-system]
 requires = ["uv_build>=0.9.7,<0.10.0"]

@@ -6,6 +6,7 @@ __all__ = [
     'Server',
     'run_gui',
     'encode_image',
+    'client'
 ]
 
 
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
     from .server import Server
     from .gui_app import run_gui as run_gui
     from .helper.helper import encode_image
+    from .helper import client as client
 
 
 def __getattr__(name: str):
@@ -28,6 +30,10 @@ def __getattr__(name: str):
         from .helper.helper import encode_image
         globals()[name] = encode_image
         return encode_image
+    elif name == 'client':
+        from .helper import client as client
+        globals()[name] = client
+        return client
     else:
         raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
 
